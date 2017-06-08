@@ -43,7 +43,7 @@ double updatePrinciple( double principle, double mpr, double payment, double tim
 	// Derived from dP/dt = rP - I, P(0) = Principle
 	double exponential = std::exp( mpr * time );
 	double next = principle * exponential + payment / mpr * ( 1. - exponential );
-	if( next < 0. ) {
+	if( next < 0.01 ) {
 		return 0.;
 	}
 	return next;
@@ -127,7 +127,10 @@ void MainWindow::refreshPlot( double payment ) {
 		unsigned int priority = pickPriority( unpaid );
 
 		// Find out how much extra money we have
-		double extra = payment - total_minimum;
+		double extra = payment;
+		for( auto i : unpaid ) {
+			extra -= loans[ i ].minimum;
+		}
 
 		// Find out if we're paying any loans off soon...
 		double next_payoff = 2.;
@@ -163,7 +166,7 @@ void MainWindow::refreshPlot( double payment ) {
 
 		// Remove paid loans
 		for( int i = 0; i < unpaid.size(); ++i ) {
-			if( money_data[ unpaid[ i ] ].back() <= 0. ) {
+			if( money_data[ unpaid[ i ] ].back() < 0.01 ) {
 				unpaid.remove( i );
 			}
 		}
@@ -190,7 +193,7 @@ unsigned int MainWindow::pickPriority( QVector< unsigned int > choices ) {
 		return 0;
 	}
 
-	unsigned int choice = 0;
+	unsigned int choice = choices[ 0 ];
 
 	if( method == PayMethod::principleFirst ) {
 		double principle = loans[ choices[ 0 ] ].principle;
