@@ -123,9 +123,9 @@ void MainWindow::refreshPlot( double payment ) {
 		money_data.push_back( new_money );
 	}
 
-	while( unpaid.size() > 0 ) {
-		unsigned int priority = pickPriority( unpaid );
+	unsigned int priority = pickPriority( unpaid );
 
+	while( unpaid.size() > 0 ) {
 		// Find out how much extra money we have
 		double extra = payment;
 		for( auto i : unpaid ) {
@@ -168,6 +168,7 @@ void MainWindow::refreshPlot( double payment ) {
 		for( int i = 0; i < unpaid.size(); ++i ) {
 			if( money_data[ unpaid[ i ] ].back() < 0.01 ) {
 				unpaid.remove( i );
+				priority = pickPriority( unpaid );
 			}
 		}
 	}
